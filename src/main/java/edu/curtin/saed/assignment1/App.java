@@ -24,16 +24,17 @@ public class App extends Application
         });
         
         ToolBar toolbar = new ToolBar();
-//         Button btn1 = new Button("My Button 1");
-//         Button btn2 = new Button("My Button 2");
-        Label label = new Label("Score: 999");
-//         toolbar.getItems().addAll(btn1, btn2, label);
-        toolbar.getItems().addAll(label);
+         Button btn1 = new Button("My Button 1");
+         Button btn2 = new Button("My Button 2");
+        Label score = new Label("Score: 0");
+        Label wallq = new Label("walls queued: 999");
+        toolbar.getItems().addAll(btn1, btn2, score,wallq);
+//        toolbar.getItems().addAll(label);
         
-//         btn1.setOnAction((event) ->
-//         {
-//             System.out.println("Button 1 pressed");
-//         });
+         btn1.setOnAction((event) ->
+         {
+             System.out.println("Button 1 pressed");
+         });
                     
         TextArea logger = new TextArea();
         logger.appendText("Hello\n");
