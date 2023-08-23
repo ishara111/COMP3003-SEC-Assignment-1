@@ -54,7 +54,8 @@ public class Score implements Runnable{
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                throw new RuntimeException("Goodbye !!!!");
+               System.out.println("Goodbye !!!!");
+               break;
             }
         }
     }
