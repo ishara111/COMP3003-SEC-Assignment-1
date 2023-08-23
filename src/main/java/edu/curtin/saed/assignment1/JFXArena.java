@@ -16,8 +16,10 @@ import java.util.*;
 public class JFXArena extends Pane
 {
     // Represents an image to draw, retrieved as a project resource.
-    private static final String IMAGE_FILE = "1554047213.png";
+    private static final String ROBO_IMAGE_FILE = "1554047213.png";
+    private static final String CITIDEL_IMAGE_FILE = "rg1024-isometric-tower.png";
     private Image robot1;
+    private Image citidel;
     
     // The following values are arbitrary, and you may need to modify them according to the 
     // requirements of your application.
@@ -45,18 +47,31 @@ public class JFXArena extends Pane
         // distributable version of your code with './gradlew build'. The approach below is how a 
         // project is supposed to read its own internal resources, and should work both for 
         // './gradlew run' and './gradlew build'.)
-                
-        try(InputStream is = getClass().getClassLoader().getResourceAsStream(IMAGE_FILE))
+
+        try(InputStream is = getClass().getClassLoader().getResourceAsStream(CITIDEL_IMAGE_FILE))
         {
             if(is == null)
             {
-                throw new AssertionError("Cannot find image file " + IMAGE_FILE);
+                throw new AssertionError("Cannot find image file " + CITIDEL_IMAGE_FILE);
+            }
+            citidel = new Image(is);
+        }
+        catch(IOException e)
+        {
+            throw new AssertionError("Cannot load image file " + CITIDEL_IMAGE_FILE, e);
+        }
+
+        try(InputStream is = getClass().getClassLoader().getResourceAsStream(ROBO_IMAGE_FILE))
+        {
+            if(is == null)
+            {
+                throw new AssertionError("Cannot find image file " + ROBO_IMAGE_FILE);
             }
             robot1 = new Image(is);
         }
         catch(IOException e)
         {
-            throw new AssertionError("Cannot load image file " + IMAGE_FILE, e);
+            throw new AssertionError("Cannot load image file " + ROBO_IMAGE_FILE, e);
         }
         
         canvas = new Canvas();
@@ -148,6 +163,7 @@ public class JFXArena extends Pane
 
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
+        drawImage(gfx, citidel,4.0,4.0 );
         drawImage(gfx, robot1, robotX, robotY);
         drawLabel(gfx, "Robot Name", robotX, robotY);
     }
