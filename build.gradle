@@ -19,7 +19,7 @@ javafx {
 }
 
 application {
-    mainClass = 'edu.curtin.saed.assignment1.App'
+    mainClass = 'edu.curtin.sec.assignment1.App'
 }
 
 pmd {

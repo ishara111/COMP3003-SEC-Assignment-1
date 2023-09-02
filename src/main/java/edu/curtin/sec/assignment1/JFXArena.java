@@ -1,4 +1,4 @@
-package edu.curtin.saed.assignment1;
+package edu.curtin.sec.assignment1;
 
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
