@@ -2,6 +2,7 @@ package edu.curtin.sec.assignment1;
 
 import edu.curtin.sec.assignment1.score.Score;
 import edu.curtin.sec.assignment1.ui.JFXArena;
+import edu.curtin.sec.assignment1.wall.PlaceWall;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,9 +14,12 @@ public class App extends Application
 {
     Label scoreText = new Label("Score: 0");
     Label wallQ = new Label("walls queued: 0");
-    int wallCount = 0;
     Score score = new Score(this);
     Thread scoreThread = new Thread(score, "score-thread");
+
+    JFXArena arena = new JFXArena();
+    PlaceWall wall = new PlaceWall(this,arena);
+    Thread wallThread = new Thread(wall, "wall-thread");
 
     public static void main(String[] args) 
     {
@@ -25,6 +29,7 @@ public class App extends Application
     @Override
     public void stop() throws Exception {
         scoreThread.interrupt();
+        wallThread.interrupt();
     }
 
     public void changeScore(int score)
@@ -40,11 +45,11 @@ public class App extends Application
 //        }
     }
 
-    private void changeNoWallQ()
+    public void changeNoWallQ(int count)
     {
         Platform.runLater(() -> {
 
-            wallQ.setText("walls queued: " + wallCount);
+            wallQ.setText("walls queued: " + count);
         });
     }
 
@@ -52,6 +57,7 @@ public class App extends Application
     public void start(Stage stage) 
     {
         scoreThread.start();
+        wallThread.start();
 
         javafxUi(stage);
     }
@@ -61,13 +67,13 @@ public class App extends Application
     private void javafxUi(Stage stage)
     {
         stage.setTitle("Assignment-1");
-        JFXArena arena = new JFXArena();
+
         arena.addListener((x, y) ->
         {
-            wallCount++;
             System.out.println("Arena click at (" + x + "," + y + ")");
-            arena.drawWallOnClick(x,y);
-            changeNoWallQ();
+            //arena.drawWallOnClick(x,y);
+            wall.addWall(x,y);
+
         });
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
