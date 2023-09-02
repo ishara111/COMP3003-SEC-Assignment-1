@@ -12,6 +12,8 @@ import javafx.application.Platform;
 public class App extends Application 
 {
     Label scoreText = new Label("Score: 0");
+    Label wallQ = new Label("walls queued: 0");
+    int wallCount = 0;
     Score score = new Score(this);
     Thread scoreThread = new Thread(score, "score-thread");
 
@@ -38,6 +40,14 @@ public class App extends Application
 //        }
     }
 
+    private void changeNoWallQ()
+    {
+        Platform.runLater(() -> {
+
+            wallQ.setText("walls queued: " + wallCount);
+        });
+    }
+
     @Override
     public void start(Stage stage) 
     {
@@ -54,16 +64,19 @@ public class App extends Application
         JFXArena arena = new JFXArena();
         arena.addListener((x, y) ->
         {
+            wallCount++;
             System.out.println("Arena click at (" + x + "," + y + ")");
             arena.drawWallOnClick(x,y);
+            changeNoWallQ();
         });
-
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
         ToolBar toolbar = new ToolBar();
         Button btn1 = new Button("clear");
         Button btn2 = new Button("My Button 2");
-        Label wallq = new Label("walls queued: 999");
+        //Label wallq = new Label("walls queued: 999");
         //toolbar.getItems().addAll(btn1, btn2, scoreText,wallq);
-        toolbar.getItems().addAll(scoreText,btn1);
+        toolbar.getItems().addAll(scoreText,spacer,wallQ,btn1);
 
          btn1.setOnAction((event) ->
          {
