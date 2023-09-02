@@ -15,9 +15,10 @@ public class ImageLoader {
     private Image wall;
     private Image broken_wall;
     private Image citidel;
+    private Image cross;
 
     List<Image> images = new ArrayList<>();
-    String[] imageFiles = {"citidel.png", "robot1.png", "robot2.png", "robot3.png", "wall.png", "broken_wall.png"};
+    String[] imageFiles = {"citidel.png", "robot1.png", "robot2.png", "robot3.png", "wall.png", "broken_wall.png", "cross.png"};
 
     Image[] robotImages;
 
@@ -45,6 +46,7 @@ private void loadImages(){
     robot3=images.get(3);
     wall=images.get(4);
     broken_wall=images.get(5);
+    cross=images.get(6);
 
     robotImages = new Image[]{robot1, robot2, robot3};
 }
@@ -66,5 +68,9 @@ private void loadImages(){
 
     public Image getCitidel() {
         return citidel;
+    }
+
+    public Image getCross() {
+        return cross;
     }
 }

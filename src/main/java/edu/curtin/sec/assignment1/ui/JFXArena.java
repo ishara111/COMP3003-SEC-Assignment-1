@@ -19,7 +19,7 @@ public class JFXArena extends Pane
 
     private ImageLoader imageLoader;
 
-    private Image robot;
+    //private Image robot;
     
     // The following values are arbitrary, and you may need to modify them according to the 
     // requirements of your application.
@@ -49,7 +49,7 @@ public class JFXArena extends Pane
         // './gradlew run' and './gradlew build'.)
 
         imageLoader = new ImageLoader();
-        robot = imageLoader.getRandomRobot();
+        //robot = imageLoader.getRandomRobot();
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
@@ -140,7 +140,7 @@ public class JFXArena extends Pane
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
         drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
-        drawImage(gfx, robot, robotX, robotY);
+        drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
         drawLabel(gfx, "Robot Name", robotX, robotY);
     }
     
@@ -162,8 +162,8 @@ public class JFXArena extends Pane
         // We also need to know how "big" to make the image. The image file has a natural width 
         // and height, but that's not necessarily the size we want to draw it on the screen. We 
         // do, however, want to preserve its aspect ratio.
-        double fullSizePixelWidth = robot.getWidth();
-        double fullSizePixelHeight = robot.getHeight();
+        double fullSizePixelWidth = image.getWidth();
+        double fullSizePixelHeight = image.getHeight();
         
         double displayedPixelWidth, displayedPixelHeight;
         if(fullSizePixelWidth > fullSizePixelHeight)
