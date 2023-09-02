@@ -23,7 +23,7 @@ public class Score implements Runnable{
     private void incrementScore() {
 //        synchronized(monitor)
 //        {
-        this.score++ ;
+        this.score=this.score+10 ;
 //            monitor.notifyAll();
 ////        }
 
@@ -39,7 +39,7 @@ public class Score implements Runnable{
 
     public void addScoreFifty()
     {
-        this.score = this.score+50;
+        this.score = this.score+100;
     }
 
     @Override
