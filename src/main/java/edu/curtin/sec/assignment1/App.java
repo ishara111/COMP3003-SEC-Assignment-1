@@ -55,19 +55,20 @@ public class App extends Application
         arena.addListener((x, y) ->
         {
             System.out.println("Arena click at (" + x + "," + y + ")");
+            arena.drawWallOnClick(x,y);
         });
 
         ToolBar toolbar = new ToolBar();
-        Button btn1 = new Button("My Button 1");
+        Button btn1 = new Button("clear");
         Button btn2 = new Button("My Button 2");
         Label wallq = new Label("walls queued: 999");
         //toolbar.getItems().addAll(btn1, btn2, scoreText,wallq);
-        toolbar.getItems().addAll(scoreText);
+        toolbar.getItems().addAll(scoreText,btn1);
 
-//         btn1.setOnAction((event) ->
-//         {
-//             System.out.println("Button 1 pressed");
-//         });
+         btn1.setOnAction((event) ->
+         {
+            arena.tempClearScreen();
+         });
 
         TextArea logger = new TextArea();
         logger.appendText("Hello\n");

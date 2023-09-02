@@ -31,6 +31,8 @@ public class JFXArena extends Pane
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
 
+    GraphicsContext gfx;
+
     private List<ArenaListener> listeners = null;
     
     /**
@@ -107,7 +109,7 @@ public class JFXArena extends Pane
     public void layoutChildren()
     {
         super.layoutChildren(); 
-        GraphicsContext gfx = canvas.getGraphicsContext2D();
+        gfx = canvas.getGraphicsContext2D();
         gfx.clearRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
         
         // First, calculate how big each grid cell should be, in pixels. (We do need to do this
@@ -142,6 +144,16 @@ public class JFXArena extends Pane
         drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
         drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
         drawLabel(gfx, "Robot Name", robotX, robotY);
+    }
+
+    public void drawWallOnClick(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getWall(),x,y);
+    }
+
+    public void tempClearScreen()
+    {
+        requestLayout();
     }
     
     
