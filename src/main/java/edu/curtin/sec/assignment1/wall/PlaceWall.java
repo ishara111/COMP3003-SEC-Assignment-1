@@ -12,6 +12,7 @@ public class PlaceWall implements Runnable{
     //private List<WallCoordinates> wallList;
     private Queue<Wall> wallQueue;
     private double x,y;
+    private int QueueWallCount;
     private int wallCount;
     private JFXArena arena;
     private App app;
@@ -19,19 +20,28 @@ public class PlaceWall implements Runnable{
         this.wallQueue = new LinkedList<>();
         this.x=0;
         this.y=0;
-        this.wallCount = 0;
+        this.QueueWallCount = 0;
         this.arena = arena;
         this.app = app;
+        this.wallCount=0;
     }
 
     public void addWall(double x,double y)
     {
-        wallQueue.add(new Wall(x,y));
-        this.wallCount++;
+        if(this.wallCount <10)
+        {
+            wallQueue.add(new Wall(x,y));
+            this.QueueWallCount++;
+            this.wallCount++;
 
-        Platform.runLater(() -> {
-            app.changeNoWallQ(this.wallCount);
-        });
+            Platform.runLater(() -> {
+                app.changeNoWallQ(this.QueueWallCount);
+            });
+        }
+    }
+    public void wallBroken()
+    {
+        this.wallCount--;
     }
     @Override
     public void run() {
@@ -39,13 +49,13 @@ public class PlaceWall implements Runnable{
             if (!wallQueue.isEmpty())
             {
                 while (!wallQueue.isEmpty()) {
-                    this.wallCount--;
+                    this.QueueWallCount--;
                     Wall wallCoords = wallQueue.poll();
                     Platform.runLater(() -> {
 
                         arena.drawWallOnClick(wallCoords.x, wallCoords.y);
                         System.out.println(wallCoords.x + " " + wallCoords.y);
-                        app.changeNoWallQ(this.wallCount);
+                        app.changeNoWallQ(this.QueueWallCount);
                     });
 
                     try {
