@@ -1,5 +1,7 @@
 package edu.curtin.sec.assignment1;
 
+import edu.curtin.sec.assignment1.score.Score;
+import edu.curtin.sec.assignment1.ui.JFXArena;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;

@@ -1,4 +1,4 @@
-package edu.curtin.sec.assignment1;
+package edu.curtin.sec.assignment1.ui;
 
 /**
  * Represents an event handler for when the arena is clicked.
