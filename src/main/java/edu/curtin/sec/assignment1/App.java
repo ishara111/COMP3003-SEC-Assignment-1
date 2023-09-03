@@ -1,5 +1,8 @@
 package edu.curtin.sec.assignment1;
 
+import edu.curtin.sec.assignment1.score.Score;
+import edu.curtin.sec.assignment1.ui.JFXArena;
+import edu.curtin.sec.assignment1.wall.PlaceWall;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,8 +13,13 @@ import javafx.application.Platform;
 public class App extends Application 
 {
     Label scoreText = new Label("Score: 0");
+    Label wallQ = new Label("walls queued: 0");
     Score score = new Score(this);
     Thread scoreThread = new Thread(score, "score-thread");
+
+    JFXArena arena = new JFXArena();
+    PlaceWall wall = new PlaceWall(this,arena);
+    Thread wallThread = new Thread(wall, "wall-thread");
 
     public static void main(String[] args) 
     {
@@ -21,6 +29,7 @@ public class App extends Application
     @Override
     public void stop() throws Exception {
         scoreThread.interrupt();
+        wallThread.interrupt();
     }
 
     public void changeScore(int score)
@@ -36,10 +45,19 @@ public class App extends Application
 //        }
     }
 
+    public void changeNoWallQ(int count)
+    {
+        Platform.runLater(() -> {
+
+            wallQ.setText("walls queued: " + count);
+        });
+    }
+
     @Override
     public void start(Stage stage) 
     {
         scoreThread.start();
+        wallThread.start();
 
         javafxUi(stage);
     }
@@ -49,23 +67,27 @@ public class App extends Application
     private void javafxUi(Stage stage)
     {
         stage.setTitle("Assignment-1");
-        JFXArena arena = new JFXArena();
+
         arena.addListener((x, y) ->
         {
             System.out.println("Arena click at (" + x + "," + y + ")");
+            //arena.drawWallOnClick(x,y);
+            wall.addWall(x,y);
+
         });
-
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
         ToolBar toolbar = new ToolBar();
-        Button btn1 = new Button("My Button 1");
+        Button btn1 = new Button("clear");
         Button btn2 = new Button("My Button 2");
-        Label wallq = new Label("walls queued: 999");
+        //Label wallq = new Label("walls queued: 999");
         //toolbar.getItems().addAll(btn1, btn2, scoreText,wallq);
-        toolbar.getItems().addAll(scoreText);
+        toolbar.getItems().addAll(scoreText,spacer,wallQ,btn1);
 
-//         btn1.setOnAction((event) ->
-//         {
-//             System.out.println("Button 1 pressed");
-//         });
+         btn1.setOnAction((event) ->
+         {
+            arena.tempClearScreen();
+         });
 
         TextArea logger = new TextArea();
         logger.appendText("Hello\n");

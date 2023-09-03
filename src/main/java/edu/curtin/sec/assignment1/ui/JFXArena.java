@@ -1,4 +1,4 @@
-package edu.curtin.sec.assignment1;
+package edu.curtin.sec.assignment1.ui;
 
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
@@ -16,8 +16,10 @@ import java.util.*;
 public class JFXArena extends Pane
 {
     // Represents an image to draw, retrieved as a project resource.
-    private static final String IMAGE_FILE = "1554047213.png";
-    private Image robot1;
+
+    private ImageLoader imageLoader;
+
+    //private Image robot;
     
     // The following values are arbitrary, and you may need to modify them according to the 
     // requirements of your application.
@@ -28,6 +30,8 @@ public class JFXArena extends Pane
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
+
+    GraphicsContext gfx;
 
     private List<ArenaListener> listeners = null;
     
@@ -45,20 +49,9 @@ public class JFXArena extends Pane
         // distributable version of your code with './gradlew build'. The approach below is how a 
         // project is supposed to read its own internal resources, and should work both for 
         // './gradlew run' and './gradlew build'.)
-                
-        try(InputStream is = getClass().getClassLoader().getResourceAsStream(IMAGE_FILE))
-        {
-            if(is == null)
-            {
-                throw new AssertionError("Cannot find image file " + IMAGE_FILE);
-            }
-            robot1 = new Image(is);
-        }
-        catch(IOException e)
-        {
-            throw new AssertionError("Cannot load image file " + IMAGE_FILE, e);
-        }
-        
+
+        imageLoader = new ImageLoader();
+        //robot = imageLoader.getRandomRobot();
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
         canvas.heightProperty().bind(heightProperty());
@@ -116,7 +109,7 @@ public class JFXArena extends Pane
     public void layoutChildren()
     {
         super.layoutChildren(); 
-        GraphicsContext gfx = canvas.getGraphicsContext2D();
+        gfx = canvas.getGraphicsContext2D();
         gfx.clearRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
         
         // First, calculate how big each grid cell should be, in pixels. (We do need to do this
@@ -148,8 +141,19 @@ public class JFXArena extends Pane
 
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
-        drawImage(gfx, robot1, robotX, robotY);
+        drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
+        drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
         drawLabel(gfx, "Robot Name", robotX, robotY);
+    }
+
+    public void drawWallOnClick(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getWall(),x,y);
+    }
+
+    public void tempClearScreen()
+    {
+        requestLayout();
     }
     
     
@@ -170,8 +174,8 @@ public class JFXArena extends Pane
         // We also need to know how "big" to make the image. The image file has a natural width 
         // and height, but that's not necessarily the size we want to draw it on the screen. We 
         // do, however, want to preserve its aspect ratio.
-        double fullSizePixelWidth = robot1.getWidth();
-        double fullSizePixelHeight = robot1.getHeight();
+        double fullSizePixelWidth = image.getWidth();
+        double fullSizePixelHeight = image.getHeight();
         
         double displayedPixelWidth, displayedPixelHeight;
         if(fullSizePixelWidth > fullSizePixelHeight)

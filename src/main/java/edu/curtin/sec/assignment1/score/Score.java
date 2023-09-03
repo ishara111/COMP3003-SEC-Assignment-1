@@ -1,5 +1,6 @@
-package edu.curtin.sec.assignment1;
+package edu.curtin.sec.assignment1.score;
 
+import edu.curtin.sec.assignment1.App;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 
@@ -47,7 +48,7 @@ public class Score implements Runnable{
         while (true) {
             incrementScore();
             setScoreText();
-            System.out.println(getScore());
+            //System.out.println(getScore());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
