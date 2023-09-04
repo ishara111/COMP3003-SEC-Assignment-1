@@ -91,7 +91,7 @@ public class PlaceWall implements Runnable{
                         Platform.runLater(() -> {
 
                             arena.drawWallOnClick(wall.x, wall.y);
-                            System.out.println("wall placedon : "+wall.x + "," + wall.y);
+                            System.out.println("wall placed on : "+wall.x + "," + wall.y);
                             app.changeNoWallQ(this.QueueWallCount);
 
                             wallList.add(wall);
