@@ -1,5 +1,7 @@
 package edu.curtin.sec.assignment1.ui;
 
+import edu.curtin.sec.assignment1.App;
+import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
 import javafx.scene.image.Image;
@@ -7,8 +9,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
-import java.io.*;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * A JavaFX GUI element that displays a grid on which you can draw images, text and lines.
@@ -33,12 +35,14 @@ public class JFXArena extends Pane
 
     GraphicsContext gfx;
 
+    private App app;
+
     private List<ArenaListener> listeners = null;
     
     /**
      * Creates a new arena object, loading the robot image and initialising a drawing surface.
      */
-    public JFXArena()
+    public JFXArena(App app)
     {
         // Here's how (in JavaFX) you get an Image object from an image file that's part of the 
         // project's "resources". If you need multiple different images, you can modify this code 
@@ -51,6 +55,8 @@ public class JFXArena extends Pane
         // './gradlew run' and './gradlew build'.)
 
         imageLoader = new ImageLoader();
+
+        this.app = app;
         //robot = imageLoader.getRandomRobot();
         canvas = new Canvas();
         canvas.widthProperty().bind(widthProperty());
@@ -144,11 +150,49 @@ public class JFXArena extends Pane
         drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
         drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
         drawLabel(gfx, "Robot Name", robotX, robotY);
+
+        try {
+            app.getWall().updateWallBlockingQueues();
+
+            DrawCurrentImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
+            DrawCurrentImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+
+//        try {
+//            app.getWall().updateWallBlockingQueues();
+//            if (!app.getWall().getWallBlockingQueue().isEmpty()) {
+//                List<Wall> walls = app.getWall().getWallBlockingQueue().take();
+//
+//                for (Wall wall : walls) {
+//                    drawImage(gfx, imageLoader.getWall(), wall.x, wall.y);
+//                }
+//            }
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+
+    }
+
+    private void DrawCurrentImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
+        if (!blockingQueue.isEmpty()) {
+            List<Wall> images = blockingQueue.take();
+
+            for (Wall image : images) {
+                drawImage(gfx, type, image.x, image.y);
+            }
+        }
     }
 
     public void drawWallOnClick(double x, double y)
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
+    }
+    public void drawBrokenWallOnClick(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getBroken_wall(),x,y);
     }
 
     public void tempClearScreen()

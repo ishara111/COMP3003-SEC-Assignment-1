@@ -17,7 +17,7 @@ public class App extends Application
     Score score = new Score(this);
     Thread scoreThread = new Thread(score, "score-thread");
 
-    JFXArena arena = new JFXArena();
+    JFXArena arena = new JFXArena(this);
     PlaceWall wall = new PlaceWall(this,arena);
     Thread wallThread = new Thread(wall, "wall-thread");
 
@@ -26,6 +26,9 @@ public class App extends Application
         launch();        
     }
 
+    public PlaceWall getWall(){
+        return wall;
+    }
     @Override
     public void stop() throws Exception {
         scoreThread.interrupt();
