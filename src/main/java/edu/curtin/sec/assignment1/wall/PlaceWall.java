@@ -16,11 +16,13 @@ public class PlaceWall implements Runnable{
 
 
     //add blovking queue for wall and robo seperately
-    private BlockingQueue<List<Wall>> blockingQueue = new ArrayBlockingQueue<>(1);
+    private BlockingQueue<List<Wall>> wallBlockingQueue = new ArrayBlockingQueue<>(1);
+    private BlockingQueue<List<Wall>> brokenWallBlockingQueue = new ArrayBlockingQueue<>(1);
 
     private Queue<Wall> wallQueue;
     private List<Wall> wallList;
-    private double x,y;
+    private List<Wall> brokenWallList;
+    //private double x,y;
     private int QueueWallCount;
     private int wallCount;
     private JFXArena arena;
@@ -28,8 +30,7 @@ public class PlaceWall implements Runnable{
     public PlaceWall(App app,JFXArena arena) {
         this.wallQueue = new LinkedList<>();
         this.wallList = new LinkedList<>();
-        this.x=0;
-        this.y=0;
+        this.brokenWallList = new LinkedList<>();
         this.QueueWallCount = 0;
         this.arena = arena;
         this.app = app;
@@ -38,12 +39,19 @@ public class PlaceWall implements Runnable{
 
     public BlockingQueue<List<Wall>> getWallBlockingQueue()
     {
-        return blockingQueue;
+        return wallBlockingQueue;
     }
-    public void updateBlockingQueue() throws InterruptedException {
-        List<Wall> oldList = blockingQueue.poll();
-        blockingQueue.put(wallList);
+    public BlockingQueue<List<Wall>> getBrokenWallBlockingQueue()
+    {
+        return brokenWallBlockingQueue;
     }
+    public void updateWallBlockingQueues() throws InterruptedException {
+        List<Wall> oldList = wallBlockingQueue.poll();
+        List<Wall> oldList1 = brokenWallBlockingQueue.poll();
+        wallBlockingQueue.put(wallList);
+        brokenWallBlockingQueue.put(brokenWallList);
+    }
+
 
     private boolean isAvailable(double x, double y) {
         if (!(x == 4.0 && y == 4.0)) {
@@ -54,7 +62,7 @@ public class PlaceWall implements Runnable{
             }
             return true; // Point doesn't match any wall, space available
         }
-        return false; // Either x or y is 4.0, space not available
+        return false;
     }
 
 
@@ -73,9 +81,23 @@ public class PlaceWall implements Runnable{
             });
         }
     }
-    public void wallBroken()
+    public void wallBroken(Wall wall)
     {
         this.wallCount--;
+
+        this.wallList.remove(wall);
+        this.brokenWallList.add(wall);
+
+        Platform.runLater(() -> {
+            arena.drawBrokenWallOnClick(wall.x, wall.y);
+            System.out.println("broken wall placed on : "+wall.x + "," + wall.y);
+        });
+    }
+    public void removeBrokenWall(Wall wall) throws InterruptedException {
+        brokenWallList.remove(wall);
+
+        List<Wall> oldList = brokenWallBlockingQueue.poll();
+        brokenWallBlockingQueue.put(brokenWallList);
     }
     @Override
     public void run() {

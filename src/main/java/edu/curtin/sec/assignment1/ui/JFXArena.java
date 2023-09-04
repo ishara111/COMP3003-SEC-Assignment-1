@@ -1,7 +1,6 @@
 package edu.curtin.sec.assignment1.ui;
 
 import edu.curtin.sec.assignment1.App;
-import edu.curtin.sec.assignment1.wall.PlaceWall;
 import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
@@ -10,8 +9,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
-import java.io.*;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * A JavaFX GUI element that displays a grid on which you can draw images, text and lines.
@@ -153,23 +152,47 @@ public class JFXArena extends Pane
         drawLabel(gfx, "Robot Name", robotX, robotY);
 
         try {
-            app.getWall().updateBlockingQueue();
-            if (!app.getWall().getWallBlockingQueue().isEmpty()) {
-                List<Wall> walls = app.getWall().getWallBlockingQueue().take();
+            app.getWall().updateWallBlockingQueues();
 
-                for (Wall wall : walls) {
-                    drawImage(gfx, imageLoader.getWall(), wall.x, wall.y);
-                }
-            }
+            DrawCurrentImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
+            DrawCurrentImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
+
+//        try {
+//            app.getWall().updateWallBlockingQueues();
+//            if (!app.getWall().getWallBlockingQueue().isEmpty()) {
+//                List<Wall> walls = app.getWall().getWallBlockingQueue().take();
+//
+//                for (Wall wall : walls) {
+//                    drawImage(gfx, imageLoader.getWall(), wall.x, wall.y);
+//                }
+//            }
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+
+    }
+
+    private void DrawCurrentImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
+        if (!blockingQueue.isEmpty()) {
+            List<Wall> images = blockingQueue.take();
+
+            for (Wall image : images) {
+                drawImage(gfx, type, image.x, image.y);
+            }
+        }
     }
 
     public void drawWallOnClick(double x, double y)
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
+    }
+    public void drawBrokenWallOnClick(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getBroken_wall(),x,y);
     }
 
     public void tempClearScreen()
