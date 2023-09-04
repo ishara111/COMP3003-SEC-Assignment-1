@@ -1,5 +1,6 @@
 package edu.curtin.sec.assignment1;
 
+import edu.curtin.sec.assignment1.robot.RobotSpawn;
 import edu.curtin.sec.assignment1.score.Score;
 import edu.curtin.sec.assignment1.ui.JFXArena;
 import edu.curtin.sec.assignment1.wall.PlaceWall;
@@ -21,6 +22,9 @@ public class App extends Application
     PlaceWall wall = new PlaceWall(this,arena);
     Thread wallThread = new Thread(wall, "wall-thread");
 
+    RobotSpawn robotSpawn= new RobotSpawn();
+    Thread robotSpawnThread = new Thread(robotSpawn,"robot-spawn-thread");
+
     public static void main(String[] args) 
     {
         launch();        
@@ -33,6 +37,7 @@ public class App extends Application
     public void stop() throws Exception {
         scoreThread.interrupt();
         wallThread.interrupt();
+        robotSpawnThread.interrupt();
     }
 
     public void changeScore(int score)
@@ -61,6 +66,7 @@ public class App extends Application
     {
         scoreThread.start();
         wallThread.start();
+        robotSpawnThread.start();
 
         javafxUi(stage);
     }

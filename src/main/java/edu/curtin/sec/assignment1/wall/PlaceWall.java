@@ -89,7 +89,7 @@ public class PlaceWall implements Runnable{
         this.brokenWallList.add(wall);
 
         Platform.runLater(() -> {
-            arena.drawBrokenWallOnClick(wall.x, wall.y);
+            arena.drawBrokenWall(wall.x, wall.y);
             System.out.println("broken wall placed on : "+wall.x + "," + wall.y);
         });
     }

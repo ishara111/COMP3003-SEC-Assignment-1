@@ -190,9 +190,14 @@ public class JFXArena extends Pane
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
     }
-    public void drawBrokenWallOnClick(double x, double y)
+    public void drawBrokenWall(double x, double y)
     {
         drawImage(gfx,imageLoader.getBroken_wall(),x,y);
+    }
+
+    public void drawRobot(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getRandomRobot(),x,y);
     }
 
     public void tempClearScreen()
