@@ -45,6 +45,21 @@ public class PlaceWall implements Runnable{
         blockingQueue.put(wallList);
     }
 
+    private boolean isAvailable(double x, double y) {
+        if (!(x == 4.0 && y == 4.0)) {
+            for (Wall wall : wallList) {
+                if (x == wall.x && y == wall.y) {
+                    return false; // Point matches a wall, space not available
+                }
+            }
+            return true; // Point doesn't match any wall, space available
+        }
+        return false; // Either x or y is 4.0, space not available
+    }
+
+
+
+
     public void addWall(double x,double y)
     {
         if(this.wallCount <10)
@@ -70,21 +85,32 @@ public class PlaceWall implements Runnable{
                 while (!wallQueue.isEmpty()) {
                     this.QueueWallCount--;
                     Wall wall = wallQueue.poll();
-                    Platform.runLater(() -> {
 
-                        arena.drawWallOnClick(wall.x, wall.y);
-                        System.out.println(wall.x + " " + wall.y);
-                        app.changeNoWallQ(this.QueueWallCount);
+                    if ((isAvailable(wall.x, wall.y)))
+                    {
+                        Platform.runLater(() -> {
 
-                        wallList.add(wall);
-                    });
+                            arena.drawWallOnClick(wall.x, wall.y);
+                            System.out.println("wall placedon : "+wall.x + "," + wall.y);
+                            app.changeNoWallQ(this.QueueWallCount);
 
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        System.out.println("Goodbye walls!!!!");
-                        Thread.currentThread().interrupt(); // Restore the interrupted status
-                        break;
+                            wallList.add(wall);
+                        });
+
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            System.out.println("Goodbye walls!!!!");
+                            Thread.currentThread().interrupt(); // Restore the interrupted status
+                            break;
+                        }
+                    }else{
+                        System.out.println("something is already there");
+                        wallCount--;
+                        Platform.runLater(() -> {
+                            app.changeNoWallQ(this.QueueWallCount);
+                        });
+
                     }
                 }
 
