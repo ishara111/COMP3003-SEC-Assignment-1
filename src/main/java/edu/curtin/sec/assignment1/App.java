@@ -22,7 +22,7 @@ public class App extends Application
     PlaceWall wall = new PlaceWall(this,arena);
     Thread wallThread = new Thread(wall, "wall-thread");
 
-    RobotSpawn robotSpawn= new RobotSpawn();
+    RobotSpawn robotSpawn= new RobotSpawn(arena);
     Thread robotSpawnThread = new Thread(robotSpawn,"robot-spawn-thread");
 
     public static void main(String[] args) 

@@ -1,12 +1,29 @@
 package edu.curtin.sec.assignment1.robot;
 
+import edu.curtin.sec.assignment1.ui.JFXArena;
+import javafx.application.Platform;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 
 public class RobotSpawn implements Runnable{
 
-    public RobotSpawn() {
+    private JFXArena arena;
+    private int roboCount;
 
+    private List<Robot> roboList = new LinkedList<>();
+
+                ExecutorService es3 = new ThreadPoolExecutor(
+                    1, 81, // Minimum 4 threads, maximum 8.
+                    3, TimeUnit.SECONDS, // Destroy excess idle threads after 15 seconds.
+                    new SynchronousQueue<>() // Used to deliver new tasks to the threads.
+            );
+
+    public RobotSpawn(JFXArena arena) {
+        this.arena = arena;
+        this.roboCount = 0;
     }
 
     private int getRandomDelay()
@@ -41,19 +58,46 @@ public class RobotSpawn implements Runnable{
                 y = 8;
             }
         }
-        System.out.println("Randomly selected corner: (" + x + ", " + y + ")");
+        //System.out.println("Randomly selected corner: (" + x + ", " + y + ")");
         return new double[]{x,y};
+    }
+
+    private boolean canSpawn(double x,double y)
+    {
+        for (Robot robot:roboList) {
+            if (robot.getX()==x && robot.getY()==y)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public void run() {
         while (true) {
 
-            getRandomSpawn();
+            double[] spawn = getRandomSpawn();
 
-            System.out.println("Random delay: (" +getRandomDelay()+ ")");
 
+            //System.out.println("Random delay: (" +getRandomDelay()+ ")");
+            if(canSpawn(spawn[0],spawn[1]))
+            {
+                roboCount++;
+
+                Platform.runLater(() -> {
+
+                    this.arena.drawRobot(spawn[0],spawn[1],roboCount);
+                    roboList.add(new Robot(roboCount,spawn[0],spawn[1],getRandomDelay()));
+                });
+            }
+
+
+            //es3.submit(new RobotMovement());
             //System.out.println(getScore());
+
+
+
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
