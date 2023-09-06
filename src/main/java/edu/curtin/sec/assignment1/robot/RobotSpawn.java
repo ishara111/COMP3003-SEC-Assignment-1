@@ -1,6 +1,7 @@
 package edu.curtin.sec.assignment1.robot;
 
 import edu.curtin.sec.assignment1.ui.JFXArena;
+import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.application.Platform;
 
 import java.util.LinkedList;
@@ -10,22 +11,29 @@ import java.util.concurrent.*;
 
 public class RobotSpawn implements Runnable{
 
+    private BlockingQueue<List<Robot>> robotBlockingQueue = new ArrayBlockingQueue<>(1);
+    private ExecutorService robotThreadPool;
     private JFXArena arena;
     private int roboCount;
 
     private List<Robot> roboList = new LinkedList<>();
 
-                ExecutorService es3 = new ThreadPoolExecutor(
-                    1, 81, // Minimum 4 threads, maximum 8.
-                    3, TimeUnit.SECONDS, // Destroy excess idle threads after 15 seconds.
-                    new SynchronousQueue<>() // Used to deliver new tasks to the threads.
-            );
 
-    public RobotSpawn(JFXArena arena) {
+    public RobotSpawn(JFXArena arena,ExecutorService robotThreadPool) {
         this.arena = arena;
         this.roboCount = 0;
+        this.robotThreadPool = robotThreadPool;
     }
 
+    public BlockingQueue<List<Robot>> getRobotBlockingQueue()
+    {
+        return robotBlockingQueue;
+    }
+
+    public void updateBlockingQueue() throws InterruptedException {
+        List<Robot> oldList = robotBlockingQueue.poll();
+        robotBlockingQueue.put(roboList);
+    }
     private int getRandomDelay()
     {
         return ThreadLocalRandom.current().nextInt(500, 2000 + 1);
@@ -75,20 +83,34 @@ public class RobotSpawn implements Runnable{
 
     @Override
     public void run() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
 
             double[] spawn = getRandomSpawn();
 
-
-            //System.out.println("Random delay: (" +getRandomDelay()+ ")");
+            while(!Thread.currentThread().isInterrupted() && !(canSpawn(spawn[0],spawn[1])) && !(roboCount==0))
+            {
+                spawn = getRandomSpawn();
+            }
+            System.out.println("Random delay: hello");
             if(canSpawn(spawn[0],spawn[1]))
             {
                 roboCount++;
 
+                double[] finalSpawn = spawn;
                 Platform.runLater(() -> {
 
-                    this.arena.drawRobot(spawn[0],spawn[1],roboCount);
-                    roboList.add(new Robot(roboCount,spawn[0],spawn[1],getRandomDelay()));
+                    this.arena.drawRobot(finalSpawn[0], finalSpawn[1],roboCount);
+                    Robot robot = new Robot(roboCount, finalSpawn[0], finalSpawn[1],getRandomDelay(),
+                            arena.getImageLoader().getRandomRobot());
+                    roboList.add(robot);
+
+//                    try {
+//                        robotBlockingQueue.poll();
+//                        robotBlockingQueue.put(roboList);
+//                    } catch (InterruptedException e) {
+//                        throw new RuntimeException(e);
+//                    }
+                    robotThreadPool.submit(new RobotMovement(arena,this,robot));
                 });
             }
 
@@ -102,6 +124,7 @@ public class RobotSpawn implements Runnable{
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
                 System.out.println("Goodbye robot spawn!!!!");
+                Thread.currentThread().interrupt(); // Restore the interrupted status
                 break;
             }
         }

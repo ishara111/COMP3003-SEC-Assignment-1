@@ -1,6 +1,7 @@
 package edu.curtin.sec.assignment1.ui;
 
 import edu.curtin.sec.assignment1.App;
+import edu.curtin.sec.assignment1.robot.Robot;
 import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
@@ -63,8 +64,8 @@ public class JFXArena extends Pane
         canvas.heightProperty().bind(heightProperty());
         getChildren().add(canvas);
     }
-    
-    
+
+    public ImageLoader getImageLoader(){return imageLoader;}
     /**
      * Moves a robot image to a new grid position. This is highly rudimentary, as you will need
      * many different robots in practice. This method currently just serves as a demonstration.
@@ -153,9 +154,11 @@ public class JFXArena extends Pane
 
         try {
             app.getWall().updateWallBlockingQueues();
+            app.getRobotSpawn().updateBlockingQueue();
 
-            DrawCurrentImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
-            DrawCurrentImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+            drawCurrentWallImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
+            drawCurrentWallImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+            drawCurrentRobotImages(app.getRobotSpawn().getRobotBlockingQueue());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -176,7 +179,7 @@ public class JFXArena extends Pane
 
     }
 
-    private void DrawCurrentImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
+    private void drawCurrentWallImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
         if (!blockingQueue.isEmpty()) {
             List<Wall> images = blockingQueue.take();
 
@@ -185,6 +188,17 @@ public class JFXArena extends Pane
             }
         }
     }
+    private void drawCurrentRobotImages(BlockingQueue<List<Robot>> blockingQueue) throws InterruptedException {
+        if (!blockingQueue.isEmpty()) {
+            List<Robot> images = blockingQueue.take();
+
+            for (Robot image : images) {
+                drawImage(gfx, image.getImage(), image.getX(), image.getY());
+                drawLabel(gfx, "Robot "+image.getId(), image.getX(), image.getY());
+            }
+        }
+    }
+
 
     public void drawWallOnClick(double x, double y)
     {

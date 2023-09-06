@@ -11,6 +11,11 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.application.Platform;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 public class App extends Application 
 {
     Label scoreText = new Label("Score: 0");
@@ -22,7 +27,13 @@ public class App extends Application
     PlaceWall wall = new PlaceWall(this,arena);
     Thread wallThread = new Thread(wall, "wall-thread");
 
-    RobotSpawn robotSpawn= new RobotSpawn(arena);
+    ExecutorService robotThreadPool = new ThreadPoolExecutor(
+            1, 4, // Minimum 1 threads, maximum 81.
+            3, TimeUnit.SECONDS, // Destroy excess idle threads after 3 seconds.
+            new SynchronousQueue<>() // Used to deliver new tasks to the threads.
+    );
+
+    RobotSpawn robotSpawn= new RobotSpawn(arena,robotThreadPool);
     Thread robotSpawnThread = new Thread(robotSpawn,"robot-spawn-thread");
 
     public static void main(String[] args) 
@@ -33,11 +44,14 @@ public class App extends Application
     public PlaceWall getWall(){
         return wall;
     }
+
+    public RobotSpawn getRobotSpawn(){ return robotSpawn;}
     @Override
     public void stop() throws Exception {
         scoreThread.interrupt();
         wallThread.interrupt();
         robotSpawnThread.interrupt();
+        robotThreadPool.shutdownNow();
     }
 
     public void changeScore(int score)
