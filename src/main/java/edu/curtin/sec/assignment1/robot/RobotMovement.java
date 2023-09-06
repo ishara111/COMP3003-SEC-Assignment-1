@@ -36,25 +36,6 @@ public class RobotMovement implements Runnable{
         return x >= 0 && x < 9.0 && y >= 0 && y < 9.0;
     }
 
-    private void getRobotListFromQ()
-    {
-        this.roboList = robotSpawn.getRobotBlockingQueue().poll();
-    }
-    private void removeFromRobotList(Robot robot)
-    {
-        this.roboList.remove(robot);
-
-    }
-    private void addToRobotList(Robot robot)
-    {
-        this.roboList.add(robot);
-
-    }
-    private void updateRobotBlockingQueue() throws InterruptedException {
-        List<Robot> oldList = robotSpawn.getRobotBlockingQueue().poll();
-        robotSpawn.getRobotBlockingQueue().put(roboList);
-    }
-
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
