@@ -28,12 +28,12 @@ public class App extends Application
     Thread wallThread = new Thread(wall, "wall-thread");
 
     ExecutorService robotThreadPool = new ThreadPoolExecutor(
-            1, 4, // Minimum 1 threads, maximum 81.
+            1, 81, // Minimum 1 threads, maximum 81.
             3, TimeUnit.SECONDS, // Destroy excess idle threads after 3 seconds.
             new SynchronousQueue<>() // Used to deliver new tasks to the threads.
     );
 
-    RobotSpawn robotSpawn= new RobotSpawn(arena,robotThreadPool);
+    RobotSpawn robotSpawn= new RobotSpawn(this,arena,robotThreadPool);
     Thread robotSpawnThread = new Thread(robotSpawn,"robot-spawn-thread");
 
     public static void main(String[] args) 
@@ -46,12 +46,16 @@ public class App extends Application
     }
 
     public RobotSpawn getRobotSpawn(){ return robotSpawn;}
-    @Override
-    public void stop() throws Exception {
+
+    public void stopThreads(){
         scoreThread.interrupt();
         wallThread.interrupt();
         robotSpawnThread.interrupt();
         robotThreadPool.shutdownNow();
+    }
+    @Override
+    public void stop() throws Exception {
+        stopThreads();
     }
 
     public void changeScore(int score)

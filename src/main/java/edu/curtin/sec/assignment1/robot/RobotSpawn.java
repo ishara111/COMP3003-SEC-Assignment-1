@@ -1,5 +1,6 @@
 package edu.curtin.sec.assignment1.robot;
 
+import edu.curtin.sec.assignment1.App;
 import edu.curtin.sec.assignment1.ui.JFXArena;
 import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.application.Platform;
@@ -15,11 +16,13 @@ public class RobotSpawn implements Runnable{
     private ExecutorService robotThreadPool;
     private JFXArena arena;
     private int roboCount;
+    private App app;
 
     private List<Robot> roboList = new LinkedList<>();
 
 
-    public RobotSpawn(JFXArena arena,ExecutorService robotThreadPool) {
+    public RobotSpawn(App app, JFXArena arena,ExecutorService robotThreadPool) {
+        this.app = app;
         this.arena = arena;
         this.roboCount = 0;
         this.robotThreadPool = robotThreadPool;
@@ -73,7 +76,7 @@ public class RobotSpawn implements Runnable{
     private boolean canSpawn(double x,double y)
     {
         for (Robot robot:roboList) {
-            if (robot.getX()==x && robot.getY()==y)
+            if (robot.getCurrX()==x && robot.getCurrY()==y)
             {
                 return false;
             }
@@ -83,15 +86,16 @@ public class RobotSpawn implements Runnable{
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-
+        int count = 0;
+        while (count!=15) {
+            count++;
             double[] spawn = getRandomSpawn();
 
             while(!Thread.currentThread().isInterrupted() && !(canSpawn(spawn[0],spawn[1])) && !(roboCount==0))
             {
                 spawn = getRandomSpawn();
             }
-            System.out.println("Random delay: hello");
+
             if(canSpawn(spawn[0],spawn[1]))
             {
                 roboCount++;
@@ -99,18 +103,18 @@ public class RobotSpawn implements Runnable{
                 double[] finalSpawn = spawn;
                 Platform.runLater(() -> {
 
-                    this.arena.drawRobot(finalSpawn[0], finalSpawn[1],roboCount);
+                    //this.arena.drawRobot(finalSpawn[0], finalSpawn[1],roboCount);
                     Robot robot = new Robot(roboCount, finalSpawn[0], finalSpawn[1],getRandomDelay(),
                             arena.getImageLoader().getRandomRobot());
                     roboList.add(robot);
-
+                    arena.requestLayout();
 //                    try {
 //                        robotBlockingQueue.poll();
 //                        robotBlockingQueue.put(roboList);
 //                    } catch (InterruptedException e) {
 //                        throw new RuntimeException(e);
 //                    }
-                    robotThreadPool.submit(new RobotMovement(arena,this,robot));
+                    robotThreadPool.submit(new TestMovement(app,arena,robot));
                 });
             }
 

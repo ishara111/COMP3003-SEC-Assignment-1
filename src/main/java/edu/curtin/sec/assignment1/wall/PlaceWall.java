@@ -1,6 +1,7 @@
 package edu.curtin.sec.assignment1.wall;
 
 import edu.curtin.sec.assignment1.App;
+import edu.curtin.sec.assignment1.robot.Robot;
 import edu.curtin.sec.assignment1.ui.JFXArena;
 import javafx.application.Platform;
 
@@ -53,11 +54,22 @@ public class PlaceWall implements Runnable{
     }
 
 
-    private boolean isAvailable(double x, double y) {
+    private boolean isAvailable(double x, double y) throws InterruptedException {
         if (!(x == 4.0 && y == 4.0)) {
             for (Wall wall : wallList) {
                 if (x == wall.x && y == wall.y) {
                     return false; // Point matches a wall, space not available
+                }
+            }
+            for (Wall wall : brokenWallList) {
+                if (x == wall.x && y == wall.y) {
+                    return false; // Point matches a broken wall, space not available
+                }
+            }
+            app.getRobotSpawn().updateBlockingQueue();
+            for (Robot robot : app.getRobotSpawn().getRobotBlockingQueue().take()) {
+                if (x == robot.getCurrX() && y == robot.getCurrY()) {
+                    return false; // Point matches a broken wall, space not available
                 }
             }
             return true; // Point doesn't match any wall, space available
@@ -108,31 +120,36 @@ public class PlaceWall implements Runnable{
                     this.QueueWallCount--;
                     Wall wall = wallQueue.poll();
 
-                    if ((isAvailable(wall.x, wall.y)))
-                    {
-                        Platform.runLater(() -> {
+                    try {
+                        if ((isAvailable(wall.x, wall.y)))
+                        {
+                            Platform.runLater(() -> {
 
-                            arena.drawWallOnClick(wall.x, wall.y);
-                            System.out.println("wall placed on : "+wall.x + "," + wall.y);
-                            app.changeNoWallQ(this.QueueWallCount);
+                                arena.drawWallOnClick(wall.x, wall.y);
+                                System.out.println("wall placed on : "+wall.x + "," + wall.y);
+                                app.changeNoWallQ(this.QueueWallCount);
 
-                            wallList.add(wall);
-                        });
+                                wallList.add(wall);
+                            });
 
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            System.out.println("Goodbye walls!!!!");
-                            Thread.currentThread().interrupt(); // Restore the interrupted status
-                            break;
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                System.out.println("Goodbye walls!!!!");
+                                Thread.currentThread().interrupt(); // Restore the interrupted status
+                                break;
+                            }
+                        }else{
+                            System.out.println("something is already there");
+                            wallCount--;
+                            Platform.runLater(() -> {
+                                app.changeNoWallQ(this.QueueWallCount);
+                            });
+
                         }
-                    }else{
-                        System.out.println("something is already there");
-                        wallCount--;
-                        Platform.runLater(() -> {
-                            app.changeNoWallQ(this.QueueWallCount);
-                        });
-
+                    } catch (InterruptedException e) {
+                        System.out.println("Goodbye walls!!!!");
+                        Thread.currentThread().interrupt();
                     }
                 }
 

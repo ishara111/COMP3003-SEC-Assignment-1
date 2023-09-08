@@ -193,13 +193,17 @@ public class JFXArena extends Pane
             List<Robot> images = blockingQueue.take();
 
             for (Robot image : images) {
-                drawImage(gfx, image.getImage(), image.getX(), image.getY());
-                drawLabel(gfx, "Robot "+image.getId(), image.getX(), image.getY());
+                drawImage(gfx, image.getImage(), image.getMoveX(), image.getMoveY());
+                drawLabel(gfx, "Robot "+image.getId(), image.getMoveX(), image.getMoveY());
             }
         }
     }
 
 
+    public void drawCross(double x, double y)
+    {
+        drawImage(gfx,imageLoader.getCross(),x,y);
+    }
     public void drawWallOnClick(double x, double y)
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
