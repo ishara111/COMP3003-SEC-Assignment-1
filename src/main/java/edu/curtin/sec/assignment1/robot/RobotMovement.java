@@ -34,6 +34,7 @@ public class RobotMovement implements Runnable {
         app.getRobotSpawn().updateBlockingQueue();
         List<Robot>robots = app.getRobotSpawn().getRobotBlockingQueue().take();
         robots.remove(robot);
+        app.getScore().robotKilled();
         Platform.runLater(() -> {
         app.getLogger().appendText("Robot "+robot.getId()+" destroyed\n");
         });

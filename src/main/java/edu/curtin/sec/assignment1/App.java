@@ -46,7 +46,9 @@ public class App extends Application
     public PlaceWall getWall(){
         return wall;
     }
-
+    public Score getScore(){
+        return score;
+    }
     public RobotSpawn getRobotSpawn(){ return robotSpawn;}
 
     public void stopThreads(){

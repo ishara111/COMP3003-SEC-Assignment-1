@@ -38,7 +38,7 @@ public class Score implements Runnable{
 
     }
 
-    public void addScoreFifty()
+    public void robotKilled()
     {
         this.score = this.score+100;
     }
