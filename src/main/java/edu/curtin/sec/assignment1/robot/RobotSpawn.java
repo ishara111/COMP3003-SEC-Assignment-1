@@ -86,9 +86,9 @@ public class RobotSpawn implements Runnable{
 
     @Override
     public void run() {
-        int count = 0;
-        while (count!=15) {
-            count++;
+        //int count = 0;
+        while (!Thread.currentThread().isInterrupted()) {
+            //count++;
             double[] spawn = getRandomSpawn();
 
             while(!Thread.currentThread().isInterrupted() && !(canSpawn(spawn[0],spawn[1])) && !(roboCount==0))
@@ -114,7 +114,7 @@ public class RobotSpawn implements Runnable{
 //                    } catch (InterruptedException e) {
 //                        throw new RuntimeException(e);
 //                    }
-                    robotThreadPool.submit(new TestMovement(app,arena,robot));
+                    robotThreadPool.submit(new RobotMovement(app,arena,robot));
                 });
             }
 
