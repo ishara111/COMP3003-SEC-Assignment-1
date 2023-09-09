@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class App extends Application 
 {
+    TextArea logger = new TextArea();
     Label scoreText = new Label("Score: 0");
     Label wallQ = new Label("walls queued: 0");
     Score score = new Score(this);
@@ -41,6 +42,7 @@ public class App extends Application
         launch();        
     }
 
+    public TextArea getLogger(){return logger;}
     public PlaceWall getWall(){
         return wall;
     }
@@ -109,16 +111,12 @@ public class App extends Application
         Button btn2 = new Button("My Button 2");
         //Label wallq = new Label("walls queued: 999");
         //toolbar.getItems().addAll(btn1, btn2, scoreText,wallq);
-        toolbar.getItems().addAll(scoreText,spacer,wallQ,btn1);
+        toolbar.getItems().addAll(scoreText,spacer,wallQ);
 
-         btn1.setOnAction((event) ->
-         {
-            arena.tempClearScreen();
-         });
-
-        TextArea logger = new TextArea();
-        logger.appendText("Hello\n");
-        logger.appendText("World\n");
+//         btn1.setOnAction((event) ->
+//         {
+//            arena.tempClearScreen();
+//         });
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().addAll(arena, logger);

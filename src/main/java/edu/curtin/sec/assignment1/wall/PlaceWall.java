@@ -103,6 +103,7 @@ public class PlaceWall implements Runnable{
         Platform.runLater(() -> {
             arena.drawBrokenWall(wall.x, wall.y);
             System.out.println("broken wall placed on : "+wall.x + "," + wall.y);
+            app.getLogger().appendText("wall broken at : ("+wall.x + "," + wall.y+")\n");
         });
     }
     public void removeBrokenWall(Wall wall) throws InterruptedException {
@@ -110,6 +111,9 @@ public class PlaceWall implements Runnable{
 
         List<Wall> oldList = brokenWallBlockingQueue.poll();
         brokenWallBlockingQueue.put(brokenWallList);
+        Platform.runLater(() -> {
+        app.getLogger().appendText("wall destroyed at : ("+wall.x + "," + wall.y+")\n");
+        });
     }
     @Override
     public void run() {
@@ -127,6 +131,7 @@ public class PlaceWall implements Runnable{
 
                                 arena.drawWallOnClick(wall.x, wall.y);
                                 System.out.println("wall placed on : "+wall.x + "," + wall.y);
+                                app.getLogger().appendText("wall placed on : ("+wall.x + "," + wall.y+")\n");
                                 app.changeNoWallQ(this.QueueWallCount);
 
                                 wallList.add(wall);

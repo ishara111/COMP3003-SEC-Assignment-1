@@ -107,6 +107,9 @@ public class RobotSpawn implements Runnable{
                     Robot robot = new Robot(roboCount, finalSpawn[0], finalSpawn[1],getRandomDelay(),
                             arena.getImageLoader().getRandomRobot());
                     roboList.add(robot);
+
+                    app.getLogger().appendText("Robot "+robot.getId()+" spawned\n");
+
                     arena.requestLayout();
 //                    try {
 //                        robotBlockingQueue.poll();

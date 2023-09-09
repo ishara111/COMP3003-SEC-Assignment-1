@@ -4,6 +4,7 @@ import edu.curtin.sec.assignment1.App;
 import edu.curtin.sec.assignment1.ui.JFXArena;
 import edu.curtin.sec.assignment1.wall.PlaceWall;
 import edu.curtin.sec.assignment1.wall.Wall;
+import javafx.application.Platform;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,9 @@ public class RobotMovement implements Runnable {
         app.getRobotSpawn().updateBlockingQueue();
         List<Robot>robots = app.getRobotSpawn().getRobotBlockingQueue().take();
         robots.remove(robot);
+        Platform.runLater(() -> {
+        app.getLogger().appendText("Robot "+robot.getId()+" destroyed\n");
+        });
     }
     private boolean isRobotThere(double x, double y) {
         // Check if the position is within bounds and there's no obstacle
