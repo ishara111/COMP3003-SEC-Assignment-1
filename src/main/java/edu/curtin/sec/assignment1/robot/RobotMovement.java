@@ -43,7 +43,7 @@ public class RobotMovement implements Runnable {
             app.getRobotSpawn().updateBlockingQueue();
             for (Robot robot : app.getRobotSpawn().getRobotBlockingQueue().take()) {
                 //System.out.println("entered llop");
-                if (x == robot.getCurrX() && y == robot.getCurrY()) {
+                if ((x == robot.getCurrX() || x == robot.getNextX()) && (y == robot.getCurrY() || y == robot.getNextY())) {
                     // System.out.println("in robot " + robot.getId() + " something found at curr" + robot.getCurrX() + " " + robot.getCurrY());
                     //System.out.println("in robot " + robot.getId() + " something found at nextr" + robot.getNextX() + " " + robot.getNextY());
                     return true;
@@ -90,6 +90,7 @@ public class RobotMovement implements Runnable {
 
             nextX = Math.round(nextX* 10.0) /10.0;
             nextY = Math.round(nextY* 10.0) /10.0;
+
 //                robot.setNextX(nextX);
 //                robot.setNextY(nextY);
 
