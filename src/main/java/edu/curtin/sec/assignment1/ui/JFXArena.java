@@ -1,6 +1,7 @@
 package edu.curtin.sec.assignment1.ui;
 
 import edu.curtin.sec.assignment1.App;
+import edu.curtin.sec.assignment1.robot.Robot;
 import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.scene.canvas.*;
 import javafx.geometry.VPos;
@@ -27,8 +28,7 @@ public class JFXArena extends Pane
     // requirements of your application.
     private int gridWidth = 9;
     private int gridHeight = 9;
-    private double robotX = 1.0;
-    private double robotY = 3.0;
+    private boolean drawCross = false;
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
@@ -63,18 +63,18 @@ public class JFXArena extends Pane
         canvas.heightProperty().bind(heightProperty());
         getChildren().add(canvas);
     }
-    
-    
+
+    public ImageLoader getImageLoader(){return imageLoader;}
     /**
      * Moves a robot image to a new grid position. This is highly rudimentary, as you will need
      * many different robots in practice. This method currently just serves as a demonstration.
      */
-    public void setRobotPosition(double x, double y)
-    {
-        robotX = x;
-        robotY = y;
-        requestLayout();
-    }
+//    public void setRobotPosition(double x, double y)
+//    {
+//        robotX = x;
+//        robotY = y;
+//        requestLayout();
+//    }
     
     /**
      * Adds a callback for when the user clicks on a grid square within the arena. The callback 
@@ -147,15 +147,22 @@ public class JFXArena extends Pane
 
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
-        drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
-        drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
-        drawLabel(gfx, "Robot Name", robotX, robotY);
+        if(!drawCross)
+        {
+            drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
+        }else {
+            drawImage(gfx,imageLoader.getCross(),4.0,4.0);
+        }
+        //drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
+        //drawLabel(gfx, "Robot Name", robotX, robotY);
 
         try {
             app.getWall().updateWallBlockingQueues();
+            app.getRobotSpawn().updateBlockingQueue();
 
-            DrawCurrentImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
-            DrawCurrentImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+            drawCurrentWallImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
+            drawCurrentWallImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+            drawCurrentRobotImages(app.getRobotSpawn().getRobotBlockingQueue());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -176,7 +183,7 @@ public class JFXArena extends Pane
 
     }
 
-    private void DrawCurrentImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
+    private void drawCurrentWallImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
         if (!blockingQueue.isEmpty()) {
             List<Wall> images = blockingQueue.take();
 
@@ -185,14 +192,33 @@ public class JFXArena extends Pane
             }
         }
     }
+    private void drawCurrentRobotImages(BlockingQueue<List<Robot>> blockingQueue) throws InterruptedException {
+        if (!blockingQueue.isEmpty()) {
+            List<Robot> images = blockingQueue.take();
 
+            for (Robot image : images) {
+                drawImage(gfx, image.getImage(), image.getMoveX(), image.getMoveY());
+                drawLabel(gfx, "Robot "+image.getId(), image.getMoveX(), image.getMoveY());
+            }
+        }
+    }
+    public void drawCross()
+    {
+        drawCross=true;
+    }
     public void drawWallOnClick(double x, double y)
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
     }
-    public void drawBrokenWallOnClick(double x, double y)
+    public void drawBrokenWall(double x, double y)
     {
         drawImage(gfx,imageLoader.getBroken_wall(),x,y);
+    }
+
+    public void drawRobot(double x, double y, int num)
+    {
+        drawImage(gfx,imageLoader.getRandomRobot(),x,y);
+        drawLabel(gfx, "Robot "+num, x, y);
     }
 
     public void tempClearScreen()
