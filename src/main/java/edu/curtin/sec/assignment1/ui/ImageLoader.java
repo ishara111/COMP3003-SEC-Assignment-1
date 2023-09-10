@@ -1,3 +1,8 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: ImageLoader (used to load all the images)
+ *********************************/
 package edu.curtin.sec.assignment1.ui;
 
 import javafx.scene.image.Image;
@@ -9,18 +14,15 @@ import java.util.List;
 import java.util.Random;
 
 public class ImageLoader {
-    private Image robot1;
-    private Image robot2;
-    private Image robot3;
     private Image wall;
-    private Image broken_wall;
+    private Image brokenWall;
     private Image citidel;
     private Image cross;
 
-    List<Image> images = new ArrayList<>();
-    String[] imageFiles = {"citidel.png", "robot1.png", "robot2.png", "robot3.png", "wall.png", "broken_wall.png", "cross.png"};
+    private List<Image> images = new ArrayList<>();
+    private String[] imageFiles = {"citidel.png", "robot1.png", "robot2.png", "robot3.png", "wall.png", "broken_wall.png", "cross.png"};
 
-    Image[] robotImages;
+    private Image[] robotImages;
 
 
     public ImageLoader() {
@@ -41,17 +43,17 @@ private void loadImages(){
     }
 
     citidel=images.get(0);
-    robot1=images.get(1);
-    robot2=images.get(2);
-    robot3=images.get(3);
+    Image robot1 = images.get(1);
+    Image robot2=images.get(2);
+    Image robot3=images.get(3);
     wall=images.get(4);
-    broken_wall=images.get(5);
+    brokenWall =images.get(5);
     cross=images.get(6);
 
     robotImages = new Image[]{robot1, robot2, robot3};
 }
 
-    public Image getRandomRobot() {
+    public Image getRandomRobot() { //returns a random robot image
         Random random = new Random();
         int randomVal = random.nextInt(robotImages.length);
         return robotImages[randomVal];
@@ -62,8 +64,8 @@ private void loadImages(){
         return wall;
     }
 
-    public Image getBroken_wall() {
-        return broken_wall;
+    public Image getBrokenWall() {
+        return brokenWall;
     }
 
     public Image getCitidel() {

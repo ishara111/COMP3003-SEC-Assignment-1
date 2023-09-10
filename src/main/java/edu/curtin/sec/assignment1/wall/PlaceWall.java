@@ -1,3 +1,8 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: PlaceWall (Runnable class which will be a thread which will be placing or removing all types of walls)
+ *********************************/
 package edu.curtin.sec.assignment1.wall;
 
 import edu.curtin.sec.assignment1.App;
@@ -12,11 +17,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class PlaceWall implements Runnable{
-
-    //private List<WallCoordinates> wallList;
-
-
-    //add blovking queue for wall and robo seperately
     private BlockingQueue<List<Wall>> wallBlockingQueue = new ArrayBlockingQueue<>(1);
     private BlockingQueue<List<Wall>> brokenWallBlockingQueue = new ArrayBlockingQueue<>(1);
 
@@ -24,7 +24,7 @@ public class PlaceWall implements Runnable{
     private List<Wall> wallList;
     private List<Wall> brokenWallList;
     //private double x,y;
-    private int QueueWallCount;
+    private int queueWallCount;
     private int wallCount;
     private JFXArena arena;
     private App app;
@@ -32,29 +32,30 @@ public class PlaceWall implements Runnable{
         this.wallQueue = new LinkedList<>();
         this.wallList = new LinkedList<>();
         this.brokenWallList = new LinkedList<>();
-        this.QueueWallCount = 0;
+        this.queueWallCount = 0;
         this.arena = arena;
         this.app = app;
         this.wallCount=0;
     }
-
+//returns blockingqueue containing walllist
     public BlockingQueue<List<Wall>> getWallBlockingQueue()
     {
         return wallBlockingQueue;
     }
+    //returns blockingqueue containing brokenwall list
     public BlockingQueue<List<Wall>> getBrokenWallBlockingQueue()
     {
         return brokenWallBlockingQueue;
     }
-    public void updateWallBlockingQueues() throws InterruptedException {
-        List<Wall> oldList = wallBlockingQueue.poll();
-        List<Wall> oldList1 = brokenWallBlockingQueue.poll();
+    public void updateWallBlockingQueues() throws InterruptedException {//this will update the lists inside the queues
+        wallBlockingQueue.poll();
+        brokenWallBlockingQueue.poll();
         wallBlockingQueue.put(wallList);
         brokenWallBlockingQueue.put(brokenWallList);
     }
 
 
-    private boolean isAvailable(double x, double y) throws InterruptedException {
+    private boolean isAvailable(double x, double y) throws InterruptedException { // checks if wall can be placed
         if (!(x == 4.0 && y == 4.0)) {
             for (Wall wall : wallList) {
                 if (x == wall.x && y == wall.y) {
@@ -69,31 +70,28 @@ public class PlaceWall implements Runnable{
             app.getRobotSpawn().updateBlockingQueue();
             for (Robot robot : app.getRobotSpawn().getRobotBlockingQueue().take()) {
                 if (x == robot.getCurrX() && y == robot.getCurrY()) {
-                    return false; // Point matches a broken wall, space not available
+                    return false; // Point matches a robot, space not available
                 }
             }
-            return true; // Point doesn't match any wall, space available
+            return true; //space avaialble
         }
-        return false;
+        return false; //if it is citidel
     }
 
-
-
-
-    public void addWall(double x,double y)
+    public void addWall(double x,double y) //adds a wall if walls are less than 10 and then addes new wall to a queue
     {
         if(this.wallCount <10)
         {
             wallQueue.add(new Wall(x,y));
-            this.QueueWallCount++;
+            this.queueWallCount++;
             this.wallCount++;
 
             Platform.runLater(() -> {
-                app.changeNoWallQ(this.QueueWallCount);
+                app.changeNoWallQ(this.queueWallCount);
             });
         }
     }
-    public void wallBroken(Wall wall)
+    public void wallBroken(Wall wall) //method called when wall is broken
     {
 
         this.wallList.remove(wall);
@@ -102,27 +100,27 @@ public class PlaceWall implements Runnable{
         Platform.runLater(() -> {
             arena.drawBrokenWall(wall.x, wall.y);
             System.out.println("broken wall placed on : "+wall.x + "," + wall.y);
-            app.getLogger().appendText("wall broken at : ("+wall.x + "," + wall.y+")\n");
+            app.getLogger().appendText("wall broken at : ("+wall.x + "," + wall.y+")\n"); // gets logged on gui
         });
     }
-    public void removeBrokenWall(Wall wall) throws InterruptedException {
-        this.wallCount--;
+    public void removeBrokenWall(Wall wall) throws InterruptedException { //called to destroy wall completely
+        this.wallCount--; //allows a new wall to be placed
 
         brokenWallList.remove(wall);
 
-        List<Wall> oldList = brokenWallBlockingQueue.poll();
+        brokenWallBlockingQueue.poll();
         brokenWallBlockingQueue.put(brokenWallList);
         Platform.runLater(() -> {
-        app.getLogger().appendText("wall destroyed at : ("+wall.x + "," + wall.y+")\n");
+        app.getLogger().appendText("wall destroyed at : ("+wall.x + "," + wall.y+")\n");// gets logged on gui
         });
     }
     @Override
-    public void run() {
+    public void run() {// runs an infinite loop that has logic to place and remove normal and broken walls
         while (!Thread.currentThread().isInterrupted()) {
             if (!wallQueue.isEmpty())
             {
                 while (!wallQueue.isEmpty()) {
-                    this.QueueWallCount--;
+                    this.queueWallCount--;
                     Wall wall = wallQueue.poll();
 
                     try {
@@ -133,7 +131,7 @@ public class PlaceWall implements Runnable{
                                 arena.drawWallOnClick(wall.x, wall.y);
                                 System.out.println("wall placed on : "+wall.x + "," + wall.y);
                                 app.getLogger().appendText("wall placed on : ("+wall.x + "," + wall.y+")\n");
-                                app.changeNoWallQ(this.QueueWallCount);
+                                app.changeNoWallQ(this.queueWallCount);
 
                                 wallList.add(wall);
                             });
@@ -141,7 +139,7 @@ public class PlaceWall implements Runnable{
                             try {
                                 Thread.sleep(2000);
                             } catch (InterruptedException e) {
-                                System.out.println("Goodbye walls!!!!");
+                                System.out.println("Wall thread interrupted");
                                 Thread.currentThread().interrupt(); // Restore the interrupted status
                                 break;
                             }
@@ -149,12 +147,12 @@ public class PlaceWall implements Runnable{
                             System.out.println("something is already there");
                             wallCount--;
                             Platform.runLater(() -> {
-                                app.changeNoWallQ(this.QueueWallCount);
+                                app.changeNoWallQ(this.queueWallCount);
                             });
 
                         }
                     } catch (InterruptedException e) {
-                        System.out.println("Goodbye walls!!!!");
+                        System.out.println("Wall thread interrupted");
                         Thread.currentThread().interrupt();
                     }
                 }

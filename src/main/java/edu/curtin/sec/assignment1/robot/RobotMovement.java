@@ -1,3 +1,8 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: RobotMovement (Runnable class which will be a thread created by threadpool and responsible for movement)
+ *********************************/
 package edu.curtin.sec.assignment1.robot;
 
 import edu.curtin.sec.assignment1.App;
@@ -13,8 +18,6 @@ public class RobotMovement implements Runnable {
     private JFXArena arena;
     private App app;
     private Robot robot;
-    private double moveX = 0;
-    private double moveY = 0;
     private Random random = new Random();
 
     public RobotMovement(App app, JFXArena arena, Robot robot) {
@@ -23,33 +26,35 @@ public class RobotMovement implements Runnable {
         this.robot = robot;
     }
 
-    private boolean isInsideGrid(double x, double y) {
-        // Check if the position is within bounds and there's no obstacle
-        return x >= 0 && x < 9.0 && y >= 0 && y < 9.0;
-    }
+//    private boolean isInsideGrid(double x, double y) {
+//        // Check if the position is within bounds and there's no obstacle
+//        return x >= 0 && x < 9.0 && y >= 0 && y < 9.0;
+//    }
 
-    private void killRobot() throws InterruptedException {
+    private void removeRobotFromList() throws InterruptedException {//removes robot from list inblockingqueue
         app.getRobotSpawn().updateBlockingQueue();
         List<Robot>robots = app.getRobotSpawn().getRobotBlockingQueue().take();
         robots.remove(robot);
+    }
+    private void killRobot() throws InterruptedException { //used to destry robot and increase score by 100
+        removeRobotFromList();
         app.getScore().robotKilled();
         Platform.runLater(() -> {
         app.getLogger().appendText("Robot "+robot.getId()+" destroyed\n");
         });
     }
-    private boolean isRobotThere(double x, double y) {
-        // Check if the position is within bounds and there's no obstacle
+    private boolean isRobotThere(double x, double y) {//checks for robot collisions
+
         try {
             app.getRobotSpawn().updateBlockingQueue();
             for (Robot robot : app.getRobotSpawn().getRobotBlockingQueue().take()) {
-                //System.out.println("entered llop");
+
                 if ((x == robot.getCurrX() || x == robot.getNextX()) && (y == robot.getCurrY() || y == robot.getNextY())) {
-                    // System.out.println("in robot " + robot.getId() + " something found at curr" + robot.getCurrX() + " " + robot.getCurrY());
-                    //System.out.println("in robot " + robot.getId() + " something found at nextr" + robot.getNextX() + " " + robot.getNextY());
+
                     return true;
                 }
             }
-            //System.out.println("outside loop false");
+
             return false;
 
         } catch (InterruptedException e) {
@@ -59,20 +64,20 @@ public class RobotMovement implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() { //runs in thread for each robot it will move with collsion and game end in mind
         while (!Thread.currentThread().isInterrupted()) {
 
             double nextX = robot.getCurrX();
             double nextY = robot.getCurrY();
-            moveX = robot.getCurrX();
-            moveY = robot.getCurrY();
+            double moveX = robot.getCurrX();
+            double moveY = robot.getCurrY();
 
             double dx = 4.0 - nextX;
             double dy = 4.0 - nextY;
 
             double ranNum = random.nextInt(2);
 
-            // Calculate the new position based on the direction towards (4, 4)
+
             if (ranNum==1.0) {
                 // Move horizontally
 
@@ -128,14 +133,14 @@ public class RobotMovement implements Runnable {
                 }
 
 
-                robot.setCurrX(nextX);
+                robot.setCurrX(nextX);//after moving set new coords as the cuurent coords
                 robot.setCurrY(nextY);
 
 
-                if(robot.getCurrX()==4.0 && robot.getCurrY()==4.0)
+                if(robot.getCurrX()==4.0 && robot.getCurrY()==4.0)//check if robot is at citidel
                 {
                     try {
-                        killRobot();
+                        removeRobotFromList();
                         arena.requestLayout();
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
@@ -146,7 +151,7 @@ public class RobotMovement implements Runnable {
 
 
                 try {
-                    app.getWall().updateWallBlockingQueues();
+                    app.getWall().updateWallBlockingQueues();// checks if robot has hit a wall or broken wall
                     for (Wall wall:app.getWall().getWallBlockingQueue().take()) {
 
                         if (wall.x == robot.getCurrX() && wall.y == robot.getCurrY())
@@ -177,9 +182,9 @@ public class RobotMovement implements Runnable {
             }
 
             try {
-                Thread.sleep(robot.getDelay());
+                Thread.sleep(robot.getDelay());//sleeps for random asigned time
             } catch (InterruptedException e) {
-                System.out.println("Goodbye robot "+robot.getId());
+                System.out.println("robot "+robot.getId()+" interrupted");
                 Thread.currentThread().interrupt();
                 break;
             }

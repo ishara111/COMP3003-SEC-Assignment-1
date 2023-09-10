@@ -1,12 +1,15 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: Score (Runnable class which will be a thread)
+ *********************************/
 package edu.curtin.sec.assignment1.score;
 
 import edu.curtin.sec.assignment1.App;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
 
 public class Score implements Runnable{
 
-    //  private Object monitor = new Object();
     private int score;
     private App app;
     //  private Label scoreText;
@@ -21,7 +24,7 @@ public class Score implements Runnable{
         return score;
     }
 
-    private void incrementScore() {
+    private void incrementScore() { //incrementing scor eby 10
 //        synchronized(monitor)
 //        {
         this.score=this.score+10 ;
@@ -30,7 +33,7 @@ public class Score implements Runnable{
 
     }
 
-    public void setScoreText() {
+    public void setScoreText() { //sets the score in toolbar
         Platform.runLater(() -> {
 
             this.app.changeScore(this.getScore());
@@ -38,14 +41,14 @@ public class Score implements Runnable{
 
     }
 
-    public void robotKilled()
+    public void robotKilled() //incrementing score by 100 when robot destroyed
     {
         this.score = this.score+100;
         setScoreText();
     }
 
     @Override
-    public void run() {
+    public void run() { //is an infinite loop that will sleep for 1 sec every iteration
         while (true) {
             incrementScore();
             setScoreText();
@@ -53,7 +56,7 @@ public class Score implements Runnable{
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                System.out.println("Goodbye !!!!");
+                System.out.println("Score thread interrupted");
                 break;
             }
         }

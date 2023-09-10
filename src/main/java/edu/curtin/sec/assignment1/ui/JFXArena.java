@@ -1,3 +1,8 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: JFXArena (has everything to do with GUI)
+ *********************************/
 package edu.curtin.sec.assignment1.ui;
 
 import edu.curtin.sec.assignment1.App;
@@ -33,7 +38,7 @@ public class JFXArena extends Pane
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
 
-    GraphicsContext gfx;
+    private GraphicsContext gfx;
 
     private App app;
 
@@ -147,7 +152,11 @@ public class JFXArena extends Pane
 
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
-        if(!drawCross)
+
+
+        // below draws all the images of all objects in their current positions
+
+        if(drawCross==false)// draws citidel or cross if game is ongoing or finished
         {
             drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
         }else {
@@ -157,34 +166,21 @@ public class JFXArena extends Pane
         //drawLabel(gfx, "Robot Name", robotX, robotY);
 
         try {
-            app.getWall().updateWallBlockingQueues();
+            app.getWall().updateWallBlockingQueues();// update blocking queues first
             app.getRobotSpawn().updateBlockingQueue();
 
-            drawCurrentWallImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());
-            drawCurrentWallImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBroken_wall());
+            drawCurrentWallImages(app.getWall().getWallBlockingQueue(), imageLoader.getWall());//draw all images
+            drawCurrentWallImages(app.getWall().getBrokenWallBlockingQueue(), imageLoader.getBrokenWall());
             drawCurrentRobotImages(app.getRobotSpawn().getRobotBlockingQueue());
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            System.out.println("failed to draw images");
         }
 
-
-//        try {
-//            app.getWall().updateWallBlockingQueues();
-//            if (!app.getWall().getWallBlockingQueue().isEmpty()) {
-//                List<Wall> walls = app.getWall().getWallBlockingQueue().take();
-//
-//                for (Wall wall : walls) {
-//                    drawImage(gfx, imageLoader.getWall(), wall.x, wall.y);
-//                }
-//            }
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
 
     }
 
     private void drawCurrentWallImages(BlockingQueue<List<Wall>> blockingQueue,Image type) throws InterruptedException {
-        if (!blockingQueue.isEmpty()) {
+        if (!blockingQueue.isEmpty()) {//draws all wall images
             List<Wall> images = blockingQueue.take();
 
             for (Wall image : images) {
@@ -193,7 +189,7 @@ public class JFXArena extends Pane
         }
     }
     private void drawCurrentRobotImages(BlockingQueue<List<Robot>> blockingQueue) throws InterruptedException {
-        if (!blockingQueue.isEmpty()) {
+        if (!blockingQueue.isEmpty()) {// draws all robot images
             List<Robot> images = blockingQueue.take();
 
             for (Robot image : images) {
@@ -202,28 +198,17 @@ public class JFXArena extends Pane
             }
         }
     }
-    public void drawCross()
+    public void drawCross()//sets drawcross to true, so it will draw cross instead of citidel
     {
         drawCross=true;
     }
-    public void drawWallOnClick(double x, double y)
+    public void drawWallOnClick(double x, double y)//draws a wall on click
     {
         drawImage(gfx,imageLoader.getWall(),x,y);
     }
-    public void drawBrokenWall(double x, double y)
+    public void drawBrokenWall(double x, double y) //draws broken wall
     {
-        drawImage(gfx,imageLoader.getBroken_wall(),x,y);
-    }
-
-    public void drawRobot(double x, double y, int num)
-    {
-        drawImage(gfx,imageLoader.getRandomRobot(),x,y);
-        drawLabel(gfx, "Robot "+num, x, y);
-    }
-
-    public void tempClearScreen()
-    {
-        requestLayout();
+        drawImage(gfx,imageLoader.getBrokenWall(),x,y);
     }
     
     
@@ -292,21 +277,21 @@ public class JFXArena extends Pane
      *     
      * You shouldn't need to modify this method.
      */
-    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1, 
-                                               double gridX2, double gridY2)
-    {
-        gfx.setStroke(Color.RED);
-        
-        // Recalculate the starting coordinate to be one unit closer to the destination, so that it
-        // doesn't overlap with any image appearing in the starting grid cell.
-        final double radius = 0.5;
-        double angle = Math.atan2(gridY2 - gridY1, gridX2 - gridX1);
-        double clippedGridX1 = gridX1 + Math.cos(angle) * radius;
-        double clippedGridY1 = gridY1 + Math.sin(angle) * radius;
-        
-        gfx.strokeLine((clippedGridX1 + 0.5) * gridSquareSize, 
-                       (clippedGridY1 + 0.5) * gridSquareSize, 
-                       (gridX2 + 0.5) * gridSquareSize, 
-                       (gridY2 + 0.5) * gridSquareSize);
-    }
+//    private void drawLine(GraphicsContext gfx, double gridX1, double gridY1,
+//                                               double gridX2, double gridY2)
+//    {
+//        gfx.setStroke(Color.RED);
+//
+//        // Recalculate the starting coordinate to be one unit closer to the destination, so that it
+//        // doesn't overlap with any image appearing in the starting grid cell.
+//        final double radius = 0.5;
+//        double angle = Math.atan2(gridY2 - gridY1, gridX2 - gridX1);
+//        double clippedGridX1 = gridX1 + Math.cos(angle) * radius;
+//        double clippedGridY1 = gridY1 + Math.sin(angle) * radius;
+//
+//        gfx.strokeLine((clippedGridX1 + 0.5) * gridSquareSize,
+//                       (clippedGridY1 + 0.5) * gridSquareSize,
+//                       (gridX2 + 0.5) * gridSquareSize,
+//                       (gridY2 + 0.5) * gridSquareSize);
+//    }
 }
