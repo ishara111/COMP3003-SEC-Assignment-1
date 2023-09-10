@@ -1,3 +1,8 @@
+/*********************************
+ * Name: Ishara Gomes
+ * ID: 20534521
+ * CLass Name: Robot (will be used to keep track of robot details)
+ *********************************/
 package edu.curtin.sec.assignment1.robot;
 
 import javafx.scene.image.Image;
