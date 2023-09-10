@@ -41,6 +41,7 @@ public class Score implements Runnable{
     public void robotKilled()
     {
         this.score = this.score+100;
+        setScoreText();
     }
 
     @Override

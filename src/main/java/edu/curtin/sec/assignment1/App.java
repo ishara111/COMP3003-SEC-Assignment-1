@@ -5,11 +5,14 @@ import edu.curtin.sec.assignment1.score.Score;
 import edu.curtin.sec.assignment1.ui.JFXArena;
 import edu.curtin.sec.assignment1.wall.PlaceWall;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.application.Platform;
+import javafx.stage.StageStyle;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
@@ -18,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class App extends Application 
 {
+    Stage stage;
     TextArea logger = new TextArea();
     Label scoreText = new Label("Score: 0");
     Label wallQ = new Label("walls queued: 0");
@@ -51,15 +55,21 @@ public class App extends Application
     }
     public RobotSpawn getRobotSpawn(){ return robotSpawn;}
 
-    public void stopThreads(){
+    public void endGame(){
         scoreThread.interrupt();
         wallThread.interrupt();
         robotSpawnThread.interrupt();
         robotThreadPool.shutdownNow();
+        arena.drawCross();
+        Platform.runLater(() -> {
+            scoreText.setText("Your HighScore: " + score.getScore());
+            logger.appendText("\nYour HighScore: " + score.getScore()+"\n");
+        });
     }
+
     @Override
     public void stop() throws Exception {
-        stopThreads();
+        endGame();
     }
 
     public void changeScore(int score)
@@ -69,10 +79,7 @@ public class App extends Application
 
             scoreText.setText("Score: " + score);
         });
-//        synchronized(monitor) {
 
-//            monitor.notifyAll();
-//        }
     }
 
     public void changeNoWallQ(int count)
@@ -91,6 +98,7 @@ public class App extends Application
         robotSpawnThread.start();
 
         javafxUi(stage);
+        this.stage = stage;
     }
 
 
@@ -110,15 +118,11 @@ public class App extends Application
         HBox.setHgrow(spacer, Priority.ALWAYS);
         ToolBar toolbar = new ToolBar();
         Button btn1 = new Button("clear");
-        Button btn2 = new Button("My Button 2");
-        //Label wallq = new Label("walls queued: 999");
-        //toolbar.getItems().addAll(btn1, btn2, scoreText,wallq);
-        toolbar.getItems().addAll(scoreText,spacer,wallQ);
+//        Button btn2 = new Button("My Button 2");
 
-//         btn1.setOnAction((event) ->
-//         {
-//            arena.tempClearScreen();
-//         });
+        toolbar.getItems().addAll(scoreText,spacer,btn1,wallQ);
+
+        btn1.setOnMouseClicked(event -> arena.requestLayout());
 
         SplitPane splitPane = new SplitPane();
         splitPane.getItems().addAll(arena, logger);

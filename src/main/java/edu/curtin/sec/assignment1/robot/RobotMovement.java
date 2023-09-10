@@ -2,11 +2,9 @@ package edu.curtin.sec.assignment1.robot;
 
 import edu.curtin.sec.assignment1.App;
 import edu.curtin.sec.assignment1.ui.JFXArena;
-import edu.curtin.sec.assignment1.wall.PlaceWall;
 import edu.curtin.sec.assignment1.wall.Wall;
 import javafx.application.Platform;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -45,7 +43,7 @@ public class RobotMovement implements Runnable {
             app.getRobotSpawn().updateBlockingQueue();
             for (Robot robot : app.getRobotSpawn().getRobotBlockingQueue().take()) {
                 //System.out.println("entered llop");
-                if ((x == robot.getCurrX() || x == robot.getNextX()) && (y == robot.getCurrY() || y == robot.getNextY())) {
+                if (x == robot.getCurrX() && y == robot.getCurrY()) {
                     // System.out.println("in robot " + robot.getId() + " something found at curr" + robot.getCurrX() + " " + robot.getCurrY());
                     //System.out.println("in robot " + robot.getId() + " something found at nextr" + robot.getNextX() + " " + robot.getNextY());
                     return true;
@@ -86,9 +84,12 @@ public class RobotMovement implements Runnable {
                 nextY += (dy > 0) ? 1 : -1;
 
             }
+
             nextX = Math.max(0.0, Math.min(8.0, nextX));
             nextY = Math.max(0.0, Math.min(8.0, nextY));
 
+            nextX = Math.round(nextX* 10.0) /10.0;
+            nextY = Math.round(nextY* 10.0) /10.0;
 //                robot.setNextX(nextX);
 //                robot.setNextY(nextY);
 
@@ -111,6 +112,8 @@ public class RobotMovement implements Runnable {
                     moveX = Math.max(0.0, Math.min(8.0, moveX));
                     moveY = Math.max(0.0, Math.min(8.0, moveY));
 
+                    moveX = Math.round(moveX* 10.0) /10.0;
+                    moveY = Math.round(moveY* 10.0) /10.0;
                     //System.out.println(moveX+" "+moveY);
                     robot.setMoveX(moveX);
                     robot.setMoveY(moveY);
@@ -130,8 +133,14 @@ public class RobotMovement implements Runnable {
 
                 if(robot.getCurrX()==4.0 && robot.getCurrY()==4.0)
                 {
-                    arena.drawCross(4.0,4.0); //fix sometimes not working
-                    app.stopThreads();
+                    try {
+                        killRobot();
+                        arena.requestLayout();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+
+                    app.endGame();
                 }
 
 

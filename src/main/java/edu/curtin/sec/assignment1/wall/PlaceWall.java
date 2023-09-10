@@ -95,7 +95,6 @@ public class PlaceWall implements Runnable{
     }
     public void wallBroken(Wall wall)
     {
-        this.wallCount--;
 
         this.wallList.remove(wall);
         this.brokenWallList.add(wall);
@@ -107,6 +106,8 @@ public class PlaceWall implements Runnable{
         });
     }
     public void removeBrokenWall(Wall wall) throws InterruptedException {
+        this.wallCount--;
+
         brokenWallList.remove(wall);
 
         List<Wall> oldList = brokenWallBlockingQueue.poll();

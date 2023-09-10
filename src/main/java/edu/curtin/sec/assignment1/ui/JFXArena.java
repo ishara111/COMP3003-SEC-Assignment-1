@@ -28,8 +28,7 @@ public class JFXArena extends Pane
     // requirements of your application.
     private int gridWidth = 9;
     private int gridHeight = 9;
-    private double robotX = 1.0;
-    private double robotY = 3.0;
+    private boolean drawCross = false;
 
     private double gridSquareSize; // Auto-calculated
     private Canvas canvas; // Used to provide a 'drawing surface'.
@@ -70,12 +69,12 @@ public class JFXArena extends Pane
      * Moves a robot image to a new grid position. This is highly rudimentary, as you will need
      * many different robots in practice. This method currently just serves as a demonstration.
      */
-    public void setRobotPosition(double x, double y)
-    {
-        robotX = x;
-        robotY = y;
-        requestLayout();
-    }
+//    public void setRobotPosition(double x, double y)
+//    {
+//        robotX = x;
+//        robotY = y;
+//        requestLayout();
+//    }
     
     /**
      * Adds a callback for when the user clicks on a grid square within the arena. The callback 
@@ -148,7 +147,12 @@ public class JFXArena extends Pane
 
         // Invoke helper methods to draw things at the current location.
         // ** You will need to adapt this to the requirements of your application. **
-        drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
+        if(!drawCross)
+        {
+            drawImage(gfx,imageLoader.getCitidel(),4.0,4.0);
+        }else {
+            drawImage(gfx,imageLoader.getCross(),4.0,4.0);
+        }
         //drawImage(gfx, imageLoader.getRandomRobot(), robotX, robotY);
         //drawLabel(gfx, "Robot Name", robotX, robotY);
 
@@ -198,11 +202,9 @@ public class JFXArena extends Pane
             }
         }
     }
-
-
-    public void drawCross(double x, double y)
+    public void drawCross()
     {
-        drawImage(gfx,imageLoader.getCross(),x,y);
+        drawCross=true;
     }
     public void drawWallOnClick(double x, double y)
     {
